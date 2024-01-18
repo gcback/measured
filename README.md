@@ -2,8 +2,8 @@
 
 This widget displays the actual width and height every time the size of the child widget changes.
 
-| ![](https://github.com/gcback/measured/assets/10203092/728bc126-6a8e-423b-8ebd-56e085c41f14) | ![](https://github.com/gcback/measured/assets/10203092/b6366afc-78dc-4464-8e5f-c1d4863dd855) |
-| -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| ![image](https://github.com/gcback/measured/assets/10203092/728bc126-6a8e-423b-8ebd-56e085c41f14) | ![agif](https://github.com/gcback/measured/assets/10203092/b6366afc-78dc-4464-8e5f-c1d4863dd855) |
+| ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
 
 ### Introduction
 
@@ -21,7 +21,7 @@ In your library add the following import:
 import 'package:measured/measured.dart';
 ```
 
-Then you just have to add a `Measured` which wrap a `child`  widget whose size change you want to monitor.
+Then you just have to add a `Measured` which wrap a `child` widget whose size change you want to monitor.
 
 ```dart
 final controller = AnimationController(vsync: this);
@@ -72,5 +72,5 @@ Measured(
 
 Feel free to contribute to this project.
 
-If you find a bug or want a feature, but don't know how to fix/implement it, please fill an [issue]().
-If you fixed a bug or implemented a feature, please send a [pull request]().
+If you find a bug or want a feature, but don't know how to fix/implement it, please fill an [issue](https://github.com/gcback/measured/issues).
+If you fixed a bug or implemented a feature, please send a [pull request](https://github.com/gcback/measured/pulls).
