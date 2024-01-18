@@ -1,16 +1,62 @@
-# sample
+# Measured
 
-A new Flutter project.
+This widget displays the actual width and height every time the size of the child widget changes.
 
-## Getting Started
+### Introduction
 
-This project is a starting point for a Flutter application.
+- We can check how the size changes when the screen layout or the arrangement of widgets changes
+- Conversely, we can determine the appropriate size on the screen and use it as a reference for UX and UI design.
+- We can register a callback to be executed when the size of a child widget changes.
+###
+# Getting started
 
-A few resources to get you started if this is your first Flutter project:
+In your library add the following import:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+```dart
+import 'package:measured/measured.dart';
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Then you just have to add a `Measured` which wrap a `child` to that wraps around the widget whose size change you want to monitor.
+
+```dart
+final controller = AnimationController(vsync: this);
+...
+...
+Measured(
+  child: SizedBox(
+    width: 100.0 + 50.0 * controller.value,
+    height:100.0 + 50.0 * (1 - controller.value),
+    child: Container(
+      color: Colors.red,
+    ),
+  ),
+)
+```
+
+### Parameters
+
+#### border
+- Specify the left, right, top, and bottom where the size will be displayed.
+
+#### onSizeChanged
+- Executes the registered callback every time the size of the child widget changes.
+
+#### bOutlinedBorder
+- Draws a rectangular border that fits the size of the child widget.
+
+#### lineWidth, lineColor
+- Measuring line's stroke width and color
+#### padding
+- Specify the gap between the location where the size will be displayed and the border.
+
+###
+# Changelog
+- Please check the Changelog page to know what's recently changed.
+
+
+###
+# Contributions
+Feel free to contribute to this project.
+
+If you find a bug or want a feature, but don't know how to fix/implement it, please fill an [issue]().
+If you fixed a bug or implemented a feature, please send a [pull request]().

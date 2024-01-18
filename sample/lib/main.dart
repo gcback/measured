@@ -53,19 +53,13 @@ class HomePage extends HookWidget {
                       fit: StackFit.expand,
                       children: [
                         AlignPositioned(
-                          alignment: Alignment.center,
-                          child: Text(length.value.toString(),
-                              style: const TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold)),
-                        ),
-                        AlignPositioned(
                           alignment: align.value,
                           child: Transform.rotate(
                             angle: controller.value * 2 * pi,
                             child: Measured(
                               backgroundColor: Colors.green.withAlpha(120),
                               lineColor: Colors.yellow,
+                              lineWidth: 5.0,
                               style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 10.0,
@@ -104,6 +98,14 @@ class HomePage extends HookWidget {
                             ),
                           ),
                         ),
+                        AlignPositioned(
+                          alignment: Alignment.center,
+                          child: Text(length.value.toString(),
+                              style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 24.0,
+                                  fontWeight: FontWeight.bold)),
+                        ),
                       ],
                     ),
                   ),
@@ -127,3 +129,23 @@ class HomePage extends HookWidget {
     );
   }
 }
+
+// class DD extends StatelessWidget {
+//   const DD({super.key});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final controller = AnimationController(vsync: this);
+//     ...
+//     ...
+//     Measured(
+//       child: SizedBox(
+//         width: 100.0 + 50.0 * controller.value,
+//         height:100.0 + 50.0 * (1 - controller.value),
+//         child: Container(
+//           color: Colors.red,
+//         ),
+//       ),
+//     );
+//   }
+// }
