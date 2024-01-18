@@ -1,6 +1,8 @@
+import 'dart:math';
 import 'package:align_positioned/align_positioned.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:measured/measured.dart';
-import 'package:mylib/mylib.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,7 +15,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      // showPerformanceOverlay: false,
       home: HomePage(),
     );
   }
@@ -26,7 +27,8 @@ class HomePage extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = useAnimationController(duration: 1.secs);
+    final controller =
+        useAnimationController(duration: const Duration(seconds: 1));
     final align = useMemoized(() {
       return controller.drive(
           AlignmentTween(begin: Alignment.topRight, end: Alignment.bottomLeft));
@@ -68,18 +70,10 @@ class HomePage extends HookWidget {
                               onSizeChanged: (size) {
                                 length.value = size.toString();
                               },
-                              child: Material(
-                                child: Ink.image(
-                                  width: 150.0 + 100 * controller.value,
-                                  height: 100.0 + 100 * (1 - controller.value),
-                                  fit: BoxFit.cover,
-                                  image: NetworkImage(
-                                    8.image('nature'),
-                                  ),
-                                  child: const InkWell(
-                                    onTap: noop,
-                                  ),
-                                ),
+                              child: SizedBox(
+                                width: 150.0 + 100 * controller.value,
+                                height: 100.0 + 100 * (1 - controller.value),
+                                child: const FlutterLogo(),
                               ),
                             ),
                           ),
@@ -91,10 +85,7 @@ class HomePage extends HookWidget {
                             child: SizedBox(
                               width: 150.0 + 60.0 * (1 - controller.value),
                               height: 80.0 + 30.0 * (1 - controller.value),
-                              child: Image.network(
-                                19.image('nature'),
-                                fit: BoxFit.cover,
-                              ),
+                              child: const FlutterLogo(),
                             ),
                           ),
                         ),
@@ -112,7 +103,6 @@ class HomePage extends HookWidget {
                 );
               },
             ),
-            const Gap(32.0),
           ],
         ),
       ),
@@ -121,31 +111,15 @@ class HomePage extends HookWidget {
           if (controller.isAnimating) {
             controller.stop();
           } else {
-            controller.repeat(reverse: true);
+            controller.repeat(
+              reverse: true,
+              period: const Duration(seconds: 1),
+            );
           }
         },
-        child: const Icon(Icons.add),
+        child: Icon(
+            controller.isAnimating ? Icons.pause : Icons.play_arrow_rounded),
       ),
     );
   }
 }
-
-// class DD extends StatelessWidget {
-//   const DD({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     final controller = AnimationController(vsync: this);
-//     ...
-//     ...
-//     Measured(
-//       child: SizedBox(
-//         width: 100.0 + 50.0 * controller.value,
-//         height:100.0 + 50.0 * (1 - controller.value),
-//         child: Container(
-//           color: Colors.red,
-//         ),
-//       ),
-//     );
-//   }
-// }

@@ -36,10 +36,6 @@ dependencies:
   cupertino_icons: ^1.0.2
   align_positioned: ^4.0.0
   flutter_hooks: ^0.20.4
-  # measured:
-  #   path: ../../lib
-  mylib:
-    path: ../../mylib
   measured:
     path: ..
 
