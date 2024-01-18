@@ -21,7 +21,7 @@ In your library add the following import:
 import 'package:measured/measured.dart';
 ```
 
-Then you just have to add a `Measured` which wrap a `child` to that wraps around the widget whose size change you want to monitor.
+Then you just have to add a `Measured` which wrap a `child`  widget whose size change you want to monitor.
 
 ```dart
 final controller = AnimationController(vsync: this);
