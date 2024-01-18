@@ -1,39 +1,73 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# Measured
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages).
+This widget displays the actual width and height every time the size of the child widget changes.
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages).
--->
+### Introduction
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+- We can check how the size changes when the screen layout or the arrangement of widgets changes
+- Conversely, we can determine the appropriate size on the screen and use it as a reference for UX and UI design.
+- We can register a callback to be executed when the size of a child widget changes.
 
-## Features
+###
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+# Getting started
 
-## Getting started
-
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
-
-## Usage
-
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
+In your library add the following import:
 
 ```dart
-const like = 'sample';
+import 'package:measured/measured.dart';
 ```
 
-## Additional information
+Then you just have to add a `Measured` which wrap a `child` to that wraps around the widget whose size change you want to monitor.
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+```dart
+final controller = AnimationController(vsync: this);
+...
+...
+Measured(
+  child: SizedBox(
+    width: 100.0 + 50.0 * controller.value,
+    height:100.0 + 50.0 * (1 - controller.value),
+    child: Container(
+      color: Colors.red,
+    ),
+  ),
+)
+```
+
+### Parameters
+
+#### border
+
+- Specify the left, right, top, and bottom where the size will be displayed.
+
+#### onSizeChanged
+
+- Executes the registered callback every time the size of the child widget changes.
+
+#### bOutlinedBorder
+
+- Draws a rectangular border that fits the size of the child widget.
+
+#### lineWidth, lineColor
+
+- Measuring line's stroke width and color
+
+#### padding
+
+- Specify the gap between the location where the size will be displayed and the border.
+
+###
+
+# Changelog
+
+- Please check the Changelog page to know what's recently changed.
+
+###
+
+# Contributions
+
+Feel free to contribute to this project.
+
+If you find a bug or want a feature, but don't know how to fix/implement it, please fill an [issue]().
+If you fixed a bug or implemented a feature, please send a [pull request]().
