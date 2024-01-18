@@ -2,8 +2,8 @@
 
 This widget displays the actual width and height every time the size of the child widget changes.
 
-![video](https://github.com/gcback/measured/assets/10203092/45807d94-d441-456e-99b0-6b3ba6079e10)
-![image](https://github.com/gcback/measured/assets/10203092/08e38833-696d-4e38-b578-b557e7fb40c6)
+![v](https://github.com/gcback/measured/assets/10203092/31693e72-7f21-4c92-991f-13ce21db9e29)
+![image](https://github.com/gcback/measured/assets/10203092/728bc126-6a8e-423b-8ebd-56e085c41f14)
 
 ### Introduction
 
