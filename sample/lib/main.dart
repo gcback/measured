@@ -1,7 +1,8 @@
 import 'dart:math';
-import 'package:align_positioned/align_positioned.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:align_positioned/align_positioned.dart';
+
 import 'package:measured/measured.dart';
 
 void main() {
@@ -27,14 +28,13 @@ class HomePage extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller =
-        useAnimationController(duration: const Duration(seconds: 1));
-    final align = useMemoized(() {
-      return controller.drive(
-          AlignmentTween(begin: Alignment.topRight, end: Alignment.bottomLeft));
-    });
-    useAnimation(align);
     final length = useState('');
+    final controller = useAnimationController();
+    final align = useMemoized(() => controller.drive(AlignmentTween(
+          begin: Alignment.topRight,
+          end: Alignment.bottomLeft,
+        )));
+    useAnimation(align);
 
     return Scaffold(
       body: Center(
@@ -91,11 +91,14 @@ class HomePage extends HookWidget {
                         ),
                         AlignPositioned(
                           alignment: Alignment.center,
-                          child: Text(length.value.toString(),
-                              style: const TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 24.0,
-                                  fontWeight: FontWeight.bold)),
+                          child: Text(
+                            length.value.toString(),
+                            style: const TextStyle(
+                              fontSize: 24.0,
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -107,19 +110,19 @@ class HomePage extends HookWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          if (controller.isAnimating) {
-            controller.stop();
-          } else {
-            controller.repeat(
-              reverse: true,
-              period: const Duration(seconds: 1),
-            );
-          }
-        },
-        child: Icon(
-            controller.isAnimating ? Icons.pause : Icons.play_arrow_rounded),
-      ),
+          onPressed: () {
+            if (controller.isAnimating) {
+              controller.stop();
+            } else {
+              controller.repeat(
+                reverse: true,
+                period: const Duration(seconds: 1),
+              );
+            }
+          },
+          child: Icon(
+            controller.isAnimating ? Icons.pause : Icons.play_arrow_rounded,
+          )),
     );
   }
 }

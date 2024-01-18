@@ -1,11 +1,11 @@
 name: measured
-description: "A new Flutter package project."
+description: 'displays the actual size every time the size of the child widget changes'
 version: 0.0.1
-homepage:
+homepage: https://github.com/gcback/measured
 
 environment:
   sdk: '>=3.2.4 <4.0.0'
-  flutter: ">=1.17.0"
+  flutter: '>=1.17.0'
 
 dependencies:
   flutter:

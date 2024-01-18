@@ -44,7 +44,6 @@ class MeasuredBorderSide {
         lineWidth: lineWidth ?? this.lineWidth,
         padding: padding ?? this.padding,
       );
-  // static const MeasuredBorderSide none = MeasuredBorderSide();
 }
 
 extension DoubleExtensions on double {

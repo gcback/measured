@@ -91,6 +91,7 @@ class _RenderSizeReporter extends RenderBox
       size = Size.zero;
     }
 
+    /// Schedules the execution of the registered callback[onSizeChanged] after the frame build is complete.
     if (oldSize != size) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         onSizeChanged?.call(size);
@@ -145,13 +146,6 @@ class _RenderSizeReporter extends RenderBox
         localRect =
             rect.topLeft & Size(size.width, border.top!.padding ?? padding * 2);
 
-        // canvas.drawRect(
-        //     localRect,
-        //     Paint()
-        //       ..color = Colors.white
-        //       ..strokeWidth = 2.0
-        //       ..style = PaintingStyle.stroke);
-
         final textSize = drawMeasuredText(
           canvas,
           rect.width.toStringAsFixed(2),
@@ -179,13 +173,6 @@ class _RenderSizeReporter extends RenderBox
       if (border.left != null) {
         localRect = rect.topLeft &
             Size(border.left!.padding ?? padding * 2, size.height);
-
-        // canvas.drawRect(
-        //     localRect,
-        //     Paint()
-        //       ..color = Colors.white
-        //       ..strokeWidth = 2.0
-        //       ..style = PaintingStyle.stroke);
 
         final textSize = drawMeasuredText(
           canvas,
