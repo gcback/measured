@@ -1,10 +1,10 @@
 name: measured
 description: 'displays the actual size every time the size of the child widget changes'
-version: 0.0.1
+version: 0.0.3
 homepage: https://github.com/gcback/measured
 
 environment:
-  sdk: '>=3.2.4 <4.0.0'
+  sdk: '>=3.2.3 <4.0.0'
   flutter: '>=1.17.0'
 
 dependencies:
@@ -21,6 +21,15 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+
+# This package supports all platforms listed below.
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
 
   # To add assets to your package, add an assets section, like this:
   # assets:

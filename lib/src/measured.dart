@@ -17,14 +17,28 @@ class Measured extends SingleChildRenderObjectWidget {
           child: child,
         );
 
+  /// Specifies border style.
   final MeasuredBorder? border;
+
+  /// Measured widget's background color.
   final Color? backgroundColor;
 
+  /// Text style to draw in the center of mesaured line.
   final TextStyle? style;
+
+  /// Mesaured line's stroke width.
   final double? lineWidth;
+
+  /// Mesaured line's color.
   final Color? lineColor;
+
+  /// Length off the child's boundary to mesaured lines.
   final double? padding;
+
+  /// Should be visible of the rectangle of box which warp a child.
   final bool? bOutlinedBorder;
+
+  /// Called when a child;s size changes.
   final void Function(Size size)? onSizeChanged;
 
   @override
@@ -120,7 +134,7 @@ class _RenderSizeReporter extends RenderBox
       final rect = offset & size;
       Rect localRect;
 
-      // A plane in [Color] have measured lines and text
+      /// Measured widget has a Colored plane if any [backgroundColor].
       if (backgroundColor != null) {
         canvas.drawRect(
           rect,
@@ -130,7 +144,7 @@ class _RenderSizeReporter extends RenderBox
         );
       }
 
-      // draw rectangle in child's size
+      /// Draw a rectangle which meets child's size.
       if (bOutlinedBorder) {
         canvas.drawRect(
           rect,
@@ -141,7 +155,14 @@ class _RenderSizeReporter extends RenderBox
         );
       }
 
-      // draw measured line at top
+      /// Draw measured line at top.
+      ///
+      /// Ex)
+      ///    |<----- 125.05 ----->|
+      ///    |                    |
+      ///           ~ ~ ~
+      ///    |                    |
+      ///
       if (border.top != null) {
         localRect =
             rect.topLeft & Size(size.width, border.top!.padding ?? padding * 2);
@@ -169,7 +190,7 @@ class _RenderSizeReporter extends RenderBox
         );
       }
 
-      // draw measured line at left
+      // Draw measured line at left.
       if (border.left != null) {
         localRect = rect.topLeft &
             Size(border.left!.padding ?? padding * 2, size.height);
@@ -197,7 +218,7 @@ class _RenderSizeReporter extends RenderBox
         );
       }
 
-      // draw measured line at right
+      /// Draw measured line at right.
       if (border.right != null) {
         localRect = (rect.topRight &
                 Size(border.right!.padding ?? padding * 2, size.height))
@@ -226,7 +247,7 @@ class _RenderSizeReporter extends RenderBox
         );
       }
 
-      // draw measured line at bottom
+      /// Draw measured line at bottom.
       if (border.bottom != null) {
         localRect = (rect.bottomLeft &
                 Size(size.width, border.bottom!.padding ?? padding * 2))
@@ -257,8 +278,9 @@ class _RenderSizeReporter extends RenderBox
     }
   }
 
-// Lines are drawn on both sides of the text.
-// Each line touches the boundary of the maxAxis.
+  /// Lines are drawn on both sides of the text.
+  /// 
+  ///   - Each line touches the boundary of the maxAxis.
   drawMeasuredLine(Canvas canvas, Offset a, Offset b, _MeasuredSide side) {
     canvas.drawLine(a, b, linePainter);
 
@@ -286,11 +308,13 @@ class _RenderSizeReporter extends RenderBox
       _ => (Offset.zero, Offset.zero, Offset.zero),
     };
 
+    /// Draw a symbol; '⋀', '⋁', '<', '>'.
+
     canvas.drawLine(a0, middle, linePainter);
     canvas.drawLine(a1, middle, linePainter);
   }
 
-  // draw a text with alignment, positioned at textOffset.
+  /// Draw a text with alignment and positioned at textOffset.
   Size drawMeasuredText(
     Canvas canvas,
     String text,

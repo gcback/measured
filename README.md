@@ -5,7 +5,9 @@ This widget displays the actual width and height every time the size of the chil
 | ![image](https://github.com/gcback/measured/assets/10203092/728bc126-6a8e-423b-8ebd-56e085c41f14) | ![agif](https://github.com/gcback/measured/assets/10203092/b6366afc-78dc-4464-8e5f-c1d4863dd855) |
 | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
 
-### Introduction
+###
+
+# Introduction
 
 - We can check how the size changes when the screen layout or the arrangement of widgets changes
 - Conversely, we can determine the appropriate size on the screen and use it as a reference for UX and UI design.
@@ -64,7 +66,7 @@ Measured(
 
 # Changelog
 
-- Please check the Changelog page to know what's recently changed.
+- Please check the [Changelog](https://pub.dev/packages/measured/changelog) page to know what's recently changed.
 
 ###
 
