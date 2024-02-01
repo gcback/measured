@@ -1,46 +1,14 @@
 part of measured;
 
-/// Specifies the position to display the size of the child widget,
-class MeasuredBorder {
-  const MeasuredBorder({
-    this.top,
-    this.left,
-    this.right,
-    this.bottom,
-  });
+enum MeasuredBorder {
+  top,
+  left,
+  bottom,
+  right;
 
-  final MeasuredBorderSide? top;
-  final MeasuredBorderSide? bottom;
-  final MeasuredBorderSide? left;
-  final MeasuredBorderSide? right;
-}
-
-class MeasuredBorderSide {
-  const MeasuredBorderSide({
-    this.color = Colors.white,
-    this.lineWidth = 0.65,
-    this.padding = 24.0,
-  });
-
-  /// measured line color
-  final Color? color;
-
-  /// measured line's stroke width
-  final double lineWidth;
-
-  /// length off the child's boundary to mesaured lines
-  final double? padding;
-
-  MeasuredBorderSide copyWith({
-    Color? color,
-    double? lineWidth,
-    double? padding,
-  }) =>
-      MeasuredBorderSide(
-        color: color ?? this.color,
-        lineWidth: lineWidth ?? this.lineWidth,
-        padding: padding ?? this.padding,
-      );
+  static get topLeft => <MeasuredBorder>[top, left];
+  static get bottomRight => <MeasuredBorder>[bottom, right];
+  static get all => <MeasuredBorder>[top, left, bottom, right];
 }
 
 extension DoubleExtensions on double {
@@ -51,24 +19,24 @@ extension DoubleExtensions on double {
 ///
 extension WidgetExtensions on Widget {
   Widget measured({
-    MeasuredBorder? border,
+    List<MeasuredBorder>? borders,
     Color? backgroundColor,
-    double? lineWidth,
-    Color? lineColor,
+    double? width,
+    Color? color,
     double? padding,
     TextStyle? style,
-    bool? bOutlinedBorder,
-    void Function(Size size)? onSizeChanged,
+    bool? outlined,
+    void Function(Size size)? onChanged,
   }) =>
       Measured(
-        border: border,
+        borders: borders,
         backgroundColor: backgroundColor,
-        lineColor: lineColor,
-        lineWidth: lineWidth,
+        color: color,
+        width: width,
         padding: padding,
         style: style,
-        bOutlinedBorder: bOutlinedBorder,
-        onSizeChanged: onSizeChanged,
+        outlined: outlined,
+        onChanged: onChanged,
         child: this,
       );
 }

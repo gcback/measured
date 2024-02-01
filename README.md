@@ -38,23 +38,42 @@ Measured(
     ),
   ),
 )
+
+or
+...
+/// using in Widget extension
+SizedBox(
+    width: 100.0 + 50.0 * controller.value,
+    height:100.0 + 50.0 * (1 - controller.value),
+    child: Container(
+      color: Colors.red,
+    ),
+  ).measured(
+    borders: const [
+      MeasuredBorder.right,
+      MeasuredBorder.bottom,
+    ],
+    onChanged(
+      () => {}
+    ),
+  )
 ```
 
 ### Parameters
 
-#### border
+#### borders
 
 - Specify the left, right, top, and bottom where the size will be displayed.
 
-#### onSizeChanged
+#### onChanged
 
 - Executes the registered callback every time the size of the child widget changes.
 
-#### bOutlinedBorder
+#### outlined
 
 - Draws a rectangular border that fits the size of the child widget.
 
-#### lineWidth, lineColor
+#### width, color
 
 - Measuring line's stroke width and color
 

@@ -30,10 +30,9 @@ class HomePage extends HookWidget {
   Widget build(BuildContext context) {
     final length = useState('');
     final controller = useAnimationController();
-    final align = useMemoized(() => controller.drive(AlignmentTween(
-          begin: Alignment.topRight,
-          end: Alignment.bottomLeft,
-        )));
+    final align = useMemoized(() => controller.drive(
+          AlignmentTween(begin: Alignment.topRight, end: Alignment.bottomLeft),
+        ));
     useAnimation(align);
 
     return Scaffold(
@@ -45,6 +44,10 @@ class HomePage extends HookWidget {
               animation: controller,
               builder: (context, child) {
                 return Measured(
+                  borders: const [
+                    MeasuredBorder.top,
+                    MeasuredBorder.bottom,
+                  ],
                   child: Container(
                     width: 300.0 + 80.0 * controller.value,
                     height: 400.0 + 150.0 * controller.value,
@@ -59,15 +62,16 @@ class HomePage extends HookWidget {
                           child: Transform.rotate(
                             angle: controller.value * 2 * pi,
                             child: Measured(
+                              borders: MeasuredBorder.topLeft,
                               backgroundColor: Colors.green.withAlpha(120),
-                              lineColor: Colors.yellow,
-                              lineWidth: 5.0,
+                              color: Colors.yellow,
+                              width: 1.0,
                               style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 10.0,
                                   fontWeight: FontWeight.bold),
-                              bOutlinedBorder: true,
-                              onSizeChanged: (size) {
+                              outlined: true,
+                              onChanged: (size) {
                                 length.value = size.toString();
                               },
                               child: SizedBox(
@@ -79,14 +83,15 @@ class HomePage extends HookWidget {
                           ),
                         ),
                         AlignPositioned(
-                          alignment: Alignment.bottomRight,
-                          child: Measured(
-                            bOutlinedBorder: true,
-                            child: SizedBox(
-                              width: 150.0 + 60.0 * (1 - controller.value),
-                              height: 80.0 + 30.0 * (1 - controller.value),
-                              child: const FlutterLogo(),
-                            ),
+                          alignment: const Alignment(0.9, 0.8),
+                          child: SizedBox(
+                            width: 150.0 + 60.0 * (1 - controller.value),
+                            height: 80.0 + 30.0 * (1 - controller.value),
+                            child: const FlutterLogo(),
+                          ).measured(
+                            borders: MeasuredBorder.all,
+                            width: 2.0,
+                            backgroundColor: Colors.white.withOpacity(0.5),
                           ),
                         ),
                         AlignPositioned(
@@ -95,7 +100,7 @@ class HomePage extends HookWidget {
                             length.value.toString(),
                             style: const TextStyle(
                               fontSize: 24.0,
-                              color: Colors.black,
+                              color: Colors.white,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -110,19 +115,20 @@ class HomePage extends HookWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            if (controller.isAnimating) {
-              controller.stop();
-            } else {
-              controller.repeat(
-                reverse: true,
-                period: const Duration(seconds: 1),
-              );
-            }
-          },
-          child: Icon(
-            controller.isAnimating ? Icons.pause : Icons.play_arrow_rounded,
-          )),
+        onPressed: () {
+          if (controller.isAnimating) {
+            controller.stop();
+          } else {
+            controller.repeat(
+              reverse: true,
+              period: const Duration(seconds: 1),
+            );
+          }
+        },
+        child: Icon(
+          controller.isAnimating ? Icons.pause : Icons.play_arrow_rounded,
+        ),
+      ),
     );
   }
 }

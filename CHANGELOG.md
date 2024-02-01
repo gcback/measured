@@ -1,3 +1,7 @@
+## 0.0.4
+
+- update parameters and a little refactoring
+
 ## 0.0.3
 
 - update documents

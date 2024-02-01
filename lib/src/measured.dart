@@ -3,14 +3,14 @@ part of measured;
 class Measured extends SingleChildRenderObjectWidget {
   const Measured({
     Key? key,
-    this.border,
+    this.borders,
     this.backgroundColor,
-    this.lineWidth,
-    this.lineColor,
+    this.width,
+    this.color,
     this.padding,
     this.style,
-    this.bOutlinedBorder,
-    this.onSizeChanged,
+    this.outlined,
+    this.onChanged,
     required Widget child,
   }) : super(
           key: key,
@@ -18,7 +18,7 @@ class Measured extends SingleChildRenderObjectWidget {
         );
 
   /// Specifies border style.
-  final MeasuredBorder? border;
+  final List<MeasuredBorder>? borders;
 
   /// Measured widget's background color.
   final Color? backgroundColor;
@@ -27,72 +27,59 @@ class Measured extends SingleChildRenderObjectWidget {
   final TextStyle? style;
 
   /// Mesaured line's stroke width.
-  final double? lineWidth;
+  final double? width;
 
   /// Mesaured line's color.
-  final Color? lineColor;
+  final Color? color;
 
   /// Length off the child's boundary to mesaured lines.
   final double? padding;
 
   /// Should be visible of the rectangle of box which warp a child.
-  final bool? bOutlinedBorder;
+  final bool? outlined;
 
   /// Called when a child;s size changes.
-  final void Function(Size size)? onSizeChanged;
+  final void Function(Size size)? onChanged;
 
   @override
   RenderObject createRenderObject(BuildContext context) {
     final theme = Theme.of(context).textTheme.displayMedium!;
 
     return _RenderSizeReporter(
-      border: border ??
-          MeasuredBorder(
-            top: MeasuredBorderSide(
-                color: lineColor ?? theme.color, padding: padding),
-            left: MeasuredBorderSide(
-                color: lineColor ?? theme.color, padding: padding),
-          ),
+      borders: borders, // ?? [MeasuredBorder.top, MeasuredBorder.left],
       backgroundColor: backgroundColor,
-      style: style ?? theme.copyWith(fontSize: 10.0),
-      lineWidth: lineWidth ?? 0.75,
-      lineColor: lineColor ?? theme.color!,
+      style: style ?? theme.copyWith(fontSize: 12.0),
+      width: width ?? 0.65,
+      color: color ?? theme.color!,
       padding: padding ?? 12.0,
-      bOutlinedBorder: bOutlinedBorder ?? false,
-      onSizeChanged: onSizeChanged,
+      outlined: outlined ?? false,
+      onChanged: onChanged,
     );
   }
-}
-
-enum _MeasuredSide {
-  top,
-  left,
-  bottom,
-  right,
 }
 
 class _RenderSizeReporter extends RenderBox
     with RenderObjectWithChildMixin<RenderBox> {
   _RenderSizeReporter({
-    required this.border,
+    required this.borders,
     required this.backgroundColor,
     required this.style,
-    required this.lineWidth,
-    required this.lineColor,
+    required this.width,
+    required this.color,
     required this.padding,
-    required this.bOutlinedBorder,
-    required this.onSizeChanged,
+    required this.outlined,
+    required this.onChanged,
   });
 
-  final MeasuredBorder border;
+  final List<MeasuredBorder>? borders;
   final Color? backgroundColor;
 
   final TextStyle style;
-  final double lineWidth;
-  final Color lineColor;
+  final double width;
+  final Color color;
   final double padding;
-  final bool bOutlinedBorder;
-  final void Function(Size)? onSizeChanged;
+  final bool outlined;
+  final void Function(Size)? onChanged;
 
   Size? oldSize;
 
@@ -105,10 +92,10 @@ class _RenderSizeReporter extends RenderBox
       size = Size.zero;
     }
 
-    /// Schedules the execution of the registered callback[onSizeChanged] after the frame build is complete.
+    /// Schedules the execution of the registered callback[onChanged] after the frame build is complete.
     if (oldSize != size) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        onSizeChanged?.call(size);
+        onChanged?.call(size);
       });
       oldSize = size;
     }
@@ -130,9 +117,11 @@ class _RenderSizeReporter extends RenderBox
     if (child != null) {
       context.paintChild(child!, offset);
 
+      /// [borders] == null, call a onChaned if any
+      if (borders == null) return;
+
       final canvas = context.canvas;
       final rect = offset & size;
-      Rect localRect;
 
       /// Measured widget has a Colored plane if any [backgroundColor].
       if (backgroundColor != null) {
@@ -144,163 +133,115 @@ class _RenderSizeReporter extends RenderBox
         );
       }
 
-      /// Draw a rectangle which meets child's size.
-      if (bOutlinedBorder) {
+      /// Draw a rectangle which meets child's size If any [outlined]
+      if (outlined) {
         canvas.drawRect(
           rect,
           linePainter
-            ..color = lineColor
-            ..strokeWidth = lineWidth
+            ..color = color
+            ..strokeWidth = width
             ..style = PaintingStyle.stroke,
         );
       }
 
-      /// Draw measured line at top.
+      /// Draw measured line and length value at top, left, bottom, right.
       ///
-      /// Ex)
+      ///   start                end
       ///    |<----- 125.05 ----->|
       ///    |                    |
       ///           ~ ~ ~
       ///    |                    |
-      ///
-      if (border.top != null) {
-        localRect =
-            rect.topLeft & Size(size.width, border.top!.padding ?? padding * 2);
 
-        final textSize = drawMeasuredText(
-          canvas,
-          rect.width.toStringAsFixed(2),
-          localRect.center,
-        );
+      /// set common properties: line's width, color, padding etc
+      linePainter.color = color;
+      linePainter.strokeWidth = width;
 
-        linePainter.color = border.top!.color ?? lineColor;
-        linePainter.strokeWidth = border.top!.lineWidth;
+      Rect measuredRect;
+      Offset textPadding;
+      String text;
+      Size textSize;
+      TextAlign textAlign = TextAlign.center;
+      Offset start, end;
 
+      for (final side in borders!) {
+        switch (side) {
+          case MeasuredBorder.top:
+          case MeasuredBorder.bottom:
+            measuredRect = (side == MeasuredBorder.top)
+                ? Alignment.topLeft
+                    .inscribe(Size(size.width, padding * 2), rect)
+                : Alignment.bottomLeft
+                    .inscribe(Size(size.width, padding * 2), rect);
+
+            text = rect.width.toStringAsFixed(2);
+            textAlign = TextAlign.center;
+            textSize = getTextSize(text, textAlign);
+            textPadding = Offset(textSize.width / 2 + 4.0, 0);
+
+            start = measuredRect.centerLeft;
+            end = measuredRect.centerRight;
+
+          case MeasuredBorder.left:
+          case MeasuredBorder.right:
+            measuredRect = (side == MeasuredBorder.left)
+                ? Alignment.topLeft
+                    .inscribe(Size(padding * 2, size.height), rect)
+                : Alignment.topRight
+                    .inscribe(Size(padding * 2, size.height), rect);
+
+            text = rect.height.toStringAsFixed(2);
+            textAlign = (side == MeasuredBorder.left)
+                ? TextAlign.left
+                : TextAlign.right;
+            textSize = getTextSize(text, textAlign);
+            textPadding = Offset(0.0, textSize.height / 2 + 4.0);
+
+            start = measuredRect.topCenter;
+            end = measuredRect.bottomCenter;
+        }
+
+        drawMeasuredText(canvas, text, measuredRect, textSize, textAlign);
         drawMeasuredLine(
-          canvas,
-          localRect.centerLeft,
-          localRect.center - Offset(textSize.width / 2 + 4.0, 0),
-          _MeasuredSide.left,
-        );
+            canvas,
+            start,
+            measuredRect.center - textPadding,
+            side == MeasuredBorder.top || side == MeasuredBorder.bottom
+                ? MeasuredBorder.left
+                : MeasuredBorder.top);
         drawMeasuredLine(
-          canvas,
-          localRect.center + Offset(textSize.width / 2 + 4.0, 0),
-          localRect.centerRight,
-          _MeasuredSide.right,
-        );
-      }
-
-      // Draw measured line at left.
-      if (border.left != null) {
-        localRect = rect.topLeft &
-            Size(border.left!.padding ?? padding * 2, size.height);
-
-        final textSize = drawMeasuredText(
-          canvas,
-          rect.height.toStringAsFixed(2),
-          localRect.center + Offset(border.left!.padding ?? padding, 0.0),
-        );
-
-        linePainter.color = border.left!.color ?? lineColor;
-        linePainter.strokeWidth = border.left!.lineWidth;
-
-        drawMeasuredLine(
-          canvas,
-          localRect.topCenter,
-          localRect.center - Offset(0.0, textSize.height / 2 + 4.0),
-          _MeasuredSide.top,
-        );
-        drawMeasuredLine(
-          canvas,
-          localRect.center + Offset(0.0, textSize.height / 2 + 4.0),
-          localRect.bottomCenter,
-          _MeasuredSide.bottom,
-        );
-      }
-
-      /// Draw measured line at right.
-      if (border.right != null) {
-        localRect = (rect.topRight &
-                Size(border.right!.padding ?? padding * 2, size.height))
-            .translate(-(border.right!.padding ?? padding * 2), 0.0);
-
-        final textSize = drawMeasuredText(
-          canvas,
-          rect.height.toStringAsFixed(2),
-          localRect.center + Offset(-(border.right!.padding ?? padding), 0.0),
-        );
-
-        linePainter.color = border.right!.color ?? lineColor;
-        linePainter.strokeWidth = border.right!.lineWidth;
-
-        drawMeasuredLine(
-          canvas,
-          localRect.topCenter,
-          localRect.center - Offset(0.0, textSize.height / 2 + 4.0),
-          _MeasuredSide.top,
-        );
-        drawMeasuredLine(
-          canvas,
-          localRect.center + Offset(0.0, textSize.height / 2 + 4.0),
-          localRect.bottomCenter,
-          _MeasuredSide.bottom,
-        );
-      }
-
-      /// Draw measured line at bottom.
-      if (border.bottom != null) {
-        localRect = (rect.bottomLeft &
-                Size(size.width, border.bottom!.padding ?? padding * 2))
-            .translate(0.0, -(border.bottom!.padding ?? padding * 2));
-
-        final textSize = drawMeasuredText(
-          canvas,
-          rect.width.toStringAsFixed(2),
-          localRect.center,
-        );
-
-        linePainter.color = border.bottom!.color ?? lineColor;
-        linePainter.strokeWidth = border.bottom!.lineWidth;
-
-        drawMeasuredLine(
-          canvas,
-          localRect.centerLeft,
-          localRect.center - Offset(textSize.width / 2 + 4.0, 0.0),
-          _MeasuredSide.left,
-        );
-        drawMeasuredLine(
-          canvas,
-          localRect.center + Offset(textSize.width / 2 + 4.0, 0.0),
-          localRect.centerRight,
-          _MeasuredSide.right,
-        );
+            canvas,
+            measuredRect.center + textPadding,
+            end,
+            side == MeasuredBorder.top || side == MeasuredBorder.bottom
+                ? MeasuredBorder.right
+                : MeasuredBorder.bottom);
       }
     }
   }
 
   /// Lines are drawn on both sides of the text.
-  /// 
+  ///
   ///   - Each line touches the boundary of the maxAxis.
-  drawMeasuredLine(Canvas canvas, Offset a, Offset b, _MeasuredSide side) {
+  drawMeasuredLine(Canvas canvas, Offset a, Offset b, MeasuredBorder side) {
     canvas.drawLine(a, b, linePainter);
 
-    final (a0, a1, middle) = switch (side) {
-      == _MeasuredSide.left => (
+    final (start, end, center) = switch (side) {
+      == MeasuredBorder.left => (
           a + Offset.fromDirection(-30.0.radians, 8.0),
           a + Offset.fromDirection(30.0.radians, 8.0),
           a
         ),
-      == _MeasuredSide.right => (
+      == MeasuredBorder.right => (
           b + Offset.fromDirection((-180.0 + 30.0).radians, 8.0),
           b + Offset.fromDirection((180.0 - 30.0).radians, 8.0),
           b
         ),
-      == _MeasuredSide.top => (
+      == MeasuredBorder.top => (
           a + Offset.fromDirection(60.0.radians, 8.0),
           a + Offset.fromDirection((-180.0 - 60.0).radians, 8.0),
           a,
         ),
-      == _MeasuredSide.bottom => (
+      == MeasuredBorder.bottom => (
           b + Offset.fromDirection(-60.0.radians, 8.0),
           b + Offset.fromDirection((-90.0 - 30.0).radians, 8.0),
           b,
@@ -309,36 +250,41 @@ class _RenderSizeReporter extends RenderBox
     };
 
     /// Draw a symbol; '⋀', '⋁', '<', '>'.
-
-    canvas.drawLine(a0, middle, linePainter);
-    canvas.drawLine(a1, middle, linePainter);
+    canvas.drawLine(start, center, linePainter);
+    canvas.drawLine(end, center, linePainter);
   }
 
-  /// Draw a text with alignment and positioned at textOffset.
-  Size drawMeasuredText(
-    Canvas canvas,
-    String text,
-    Offset textOffset, [
-    TextAlign textAlign = TextAlign.center,
-  ]) {
+  /// Get a area to drawing [text]
+  Size getTextSize(String text, TextAlign textAlign) {
     textPainter
       ..text = TextSpan(text: text, style: style)
       ..textAlign = textAlign
       ..layout();
 
-    final offset = switch (textAlign) {
-      TextAlign.center => Offset(
-          textOffset.dx - textPainter.width / 2,
-          textOffset.dy - textPainter.height / 2,
-        ),
-      TextAlign.left => Offset(
-          textOffset.dx,
-          textOffset.dy - textPainter.height / 2,
-        ),
-      _ => textOffset,
+    return textPainter.size;
+  }
+
+  /// Draw a text with alignment and positioned at textOffset.
+  void drawMeasuredText(
+    Canvas canvas,
+    String text,
+    Rect rect,
+    Size textSize, [
+    TextAlign textAlign = TextAlign.center,
+  ]) {
+    /// only using in TextAlign.left or TextAlign.right
+    final textPadding = padding * 0.5;
+
+    final Rect(topLeft: offset) = switch (textAlign) {
+      TextAlign.left => Alignment.centerLeft
+          .inscribe(textSize, rect)
+          .shift(Offset(textPadding, 0.0)),
+      TextAlign.right => Alignment.centerRight
+          .inscribe(textSize, rect)
+          .shift(Offset(-textPadding, 0.0)),
+      _ => Alignment.center.inscribe(textSize, rect),
     };
 
     textPainter.paint(canvas, offset);
-    return Size(textPainter.width, textPainter.height);
   }
 }
