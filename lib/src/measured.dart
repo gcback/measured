@@ -1,8 +1,8 @@
-part of measured;
+part of '../measured.dart';
 
 class Measured extends SingleChildRenderObjectWidget {
   const Measured({
-    Key? key,
+    super.key,
     this.borders,
     this.backgroundColor,
     this.width,
@@ -11,11 +11,8 @@ class Measured extends SingleChildRenderObjectWidget {
     this.style,
     this.outlined,
     this.onChanged,
-    required Widget child,
-  }) : super(
-          key: key,
-          child: child,
-        );
+    required Widget super.child,
+  });
 
   /// Specifies border style.
   final List<MeasuredBorder>? borders;
@@ -46,7 +43,7 @@ class Measured extends SingleChildRenderObjectWidget {
     final theme = Theme.of(context).textTheme.displayMedium!;
 
     return _RenderSizeReporter(
-      borders: borders, // ?? [MeasuredBorder.top, MeasuredBorder.left],
+      borders: borders ?? MeasuredBorder.topLeft,
       backgroundColor: backgroundColor,
       style: style ?? theme.copyWith(fontSize: 12.0),
       width: width ?? 0.65,
@@ -109,7 +106,6 @@ class _RenderSizeReporter extends RenderBox
     return false;
   }
 
-  final textPainter = TextPainter()..textDirection = TextDirection.ltr;
   final linePainter = Paint();
 
   @override
@@ -156,11 +152,14 @@ class _RenderSizeReporter extends RenderBox
       linePainter.color = color;
       linePainter.strokeWidth = width;
 
+      final textPainter = TextPainter()
+        ..textDirection = TextDirection.ltr
+        ..textAlign = TextAlign.center;
+
       Rect measuredRect;
       Offset textPadding;
       String text;
-      Size textSize;
-      TextAlign textAlign = TextAlign.center;
+      Alignment textAlignment;
       Offset start, end;
 
       for (final side in borders!) {
@@ -172,35 +171,37 @@ class _RenderSizeReporter extends RenderBox
                     .inscribe(Size(size.width, padding * 2), rect)
                 : Alignment.bottomLeft
                     .inscribe(Size(size.width, padding * 2), rect);
-
             text = rect.width.toStringAsFixed(2);
-            textAlign = TextAlign.center;
-            textSize = getTextSize(text, textAlign);
-            textPadding = Offset(textSize.width / 2 + 4.0, 0);
+            textAlignment = Alignment.center;
 
+            drawMeasuredText(
+                canvas, textPainter, text, measuredRect, textAlignment);
+
+            textPadding = Offset(textPainter.size.width / 2 + 4.0, 0);
             start = measuredRect.centerLeft;
             end = measuredRect.centerRight;
 
           case MeasuredBorder.left:
           case MeasuredBorder.right:
-            measuredRect = (side == MeasuredBorder.left)
+            measuredRect = side == MeasuredBorder.left
                 ? Alignment.topLeft
                     .inscribe(Size(padding * 2, size.height), rect)
                 : Alignment.topRight
                     .inscribe(Size(padding * 2, size.height), rect);
+            text = ' ${rect.height.toStringAsFixed(2)} ';
+            textAlignment = side == MeasuredBorder.left
+                ? Alignment.centerLeft
+                : Alignment.centerRight;
 
-            text = rect.height.toStringAsFixed(2);
-            textAlign = (side == MeasuredBorder.left)
-                ? TextAlign.left
-                : TextAlign.right;
-            textSize = getTextSize(text, textAlign);
-            textPadding = Offset(0.0, textSize.height / 2 + 4.0);
+            drawMeasuredText(
+                canvas, textPainter, text, measuredRect, textAlignment);
+
+            textPadding = Offset(0.0, textPainter.size.height / 2 + 4.0);
 
             start = measuredRect.topCenter;
             end = measuredRect.bottomCenter;
         }
 
-        drawMeasuredText(canvas, text, measuredRect, textSize, textAlign);
         drawMeasuredLine(
             canvas,
             start,
@@ -216,6 +217,8 @@ class _RenderSizeReporter extends RenderBox
                 ? MeasuredBorder.right
                 : MeasuredBorder.bottom);
       }
+
+      textPainter.dispose();
     }
   }
 
@@ -254,37 +257,22 @@ class _RenderSizeReporter extends RenderBox
     canvas.drawLine(end, center, linePainter);
   }
 
-  /// Get a area to drawing [text]
-  Size getTextSize(String text, TextAlign textAlign) {
-    textPainter
-      ..text = TextSpan(text: text, style: style)
-      ..textAlign = textAlign
-      ..layout();
-
-    return textPainter.size;
-  }
-
   /// Draw a text with alignment and positioned at textOffset.
   void drawMeasuredText(
     Canvas canvas,
+    TextPainter textPainter,
     String text,
     Rect rect,
-    Size textSize, [
-    TextAlign textAlign = TextAlign.center,
-  ]) {
-    /// only using in TextAlign.left or TextAlign.right
-    final textPadding = padding * 0.5;
+    Alignment alignment,
+  ) {
+    textPainter
+      ..text = TextSpan(text: text, style: style)
+      ..layout();
 
-    final Rect(topLeft: offset) = switch (textAlign) {
-      TextAlign.left => Alignment.centerLeft
-          .inscribe(textSize, rect)
-          .shift(Offset(textPadding, 0.0)),
-      TextAlign.right => Alignment.centerRight
-          .inscribe(textSize, rect)
-          .shift(Offset(-textPadding, 0.0)),
-      _ => Alignment.center.inscribe(textSize, rect),
-    };
+    /// Get the position Offset where the text will be placed in the [rect].
+    final offset = alignment.inscribe(textPainter.size, rect).topLeft;
 
+    /// Paints the text and releases the resources of the [textPainter] object.
     textPainter.paint(canvas, offset);
   }
 }

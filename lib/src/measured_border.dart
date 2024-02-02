@@ -1,4 +1,4 @@
-part of measured;
+part of '../measured.dart';
 
 enum MeasuredBorder {
   top,

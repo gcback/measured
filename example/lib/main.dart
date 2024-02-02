@@ -44,10 +44,8 @@ class HomePage extends HookWidget {
               animation: controller,
               builder: (context, child) {
                 return Measured(
-                  borders: const [
-                    MeasuredBorder.top,
-                    MeasuredBorder.bottom,
-                  ],
+                  // color: Colors.white,
+                  // style: const TextStyle(color: Colors.white, fontSize: 10.0),
                   child: Container(
                     width: 300.0 + 80.0 * controller.value,
                     height: 400.0 + 150.0 * controller.value,
