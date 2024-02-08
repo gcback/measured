@@ -44,8 +44,8 @@ class HomePage extends HookWidget {
               animation: controller,
               builder: (context, child) {
                 return Measured(
-                  // color: Colors.white,
-                  // style: const TextStyle(color: Colors.white, fontSize: 10.0),
+                  color: Colors.white,
+                  style: const TextStyle(color: Colors.white, fontSize: 10.0),
                   child: Container(
                     width: 300.0 + 80.0 * controller.value,
                     height: 400.0 + 150.0 * controller.value,
@@ -89,6 +89,19 @@ class HomePage extends HookWidget {
                           ).measured(
                             borders: MeasuredBorder.all,
                             width: 2.0,
+                            backgroundColor: Colors.white.withOpacity(0.5),
+                          ),
+                        ),
+                        AlignPositioned(
+                          alignment: const Alignment(-0.9, -0.8),
+                          child: SizedBox(
+                            width: 50.0 + 60.0 * (1 - controller.value),
+                            height: 40.0 + 30.0 * (1 - controller.value),
+                            child: const FlutterLogo(),
+                          ).measured(
+                            borders: MeasuredBorder.none,
+                            outlined: true,
+                            width: 0.5,
                             backgroundColor: Colors.white.withOpacity(0.5),
                           ),
                         ),

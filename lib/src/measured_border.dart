@@ -9,6 +9,7 @@ enum MeasuredBorder {
   static get topLeft => <MeasuredBorder>[top, left];
   static get bottomRight => <MeasuredBorder>[bottom, right];
   static get all => <MeasuredBorder>[top, left, bottom, right];
+  static get none => <MeasuredBorder>[];
 }
 
 extension DoubleExtensions on double {

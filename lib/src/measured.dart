@@ -42,7 +42,7 @@ class Measured extends SingleChildRenderObjectWidget {
   RenderObject createRenderObject(BuildContext context) {
     final theme = Theme.of(context).textTheme.displayMedium!;
 
-    return _RenderSizeReporter(
+    return RenderSizeReporter(
       borders: borders ?? MeasuredBorder.topLeft,
       backgroundColor: backgroundColor,
       style: style ?? theme.copyWith(fontSize: 12.0),
@@ -53,30 +53,112 @@ class Measured extends SingleChildRenderObjectWidget {
       onChanged: onChanged,
     );
   }
+
+  @override
+  void updateRenderObject(
+    BuildContext context,
+    covariant RenderSizeReporter renderObject,
+  ) {
+    // assert(borders != null, '[borders] should not be null');
+
+    renderObject
+      ..borders = borders ?? MeasuredBorder.topLeft
+      ..backgroundColor = backgroundColor
+      ..color = color
+      ..padding = padding
+      ..width = width
+      ..style = style
+      ..outlined = outlined
+      ..onChanged = onChanged;
+  }
 }
 
-class _RenderSizeReporter extends RenderBox
+class RenderSizeReporter extends RenderBox
     with RenderObjectWithChildMixin<RenderBox> {
-  _RenderSizeReporter({
-    required this.borders,
-    required this.backgroundColor,
-    required this.style,
-    required this.width,
-    required this.color,
-    required this.padding,
-    required this.outlined,
-    required this.onChanged,
-  });
+  RenderSizeReporter({
+    required List<MeasuredBorder> borders,
+    Color? backgroundColor,
+    required bool outlined,
+    required double padding,
+    required TextStyle style,
+    required double width,
+    required Color color,
+    required void Function(Size)? onChanged,
+  })  : _borders = borders,
+        _outlined = outlined,
+        _backgroundColor = backgroundColor,
+        _color = color,
+        _padding = padding,
+        _width = width,
+        _style = style,
+        _onChanged = onChanged;
 
-  final List<MeasuredBorder>? borders;
-  final Color? backgroundColor;
+  List<MeasuredBorder> _borders;
+  bool _outlined;
+  Color? _backgroundColor;
+  TextStyle _style;
+  double _width;
+  Color _color;
+  double _padding;
+  void Function(Size)? _onChanged;
 
-  final TextStyle style;
-  final double width;
-  final Color color;
-  final double padding;
-  final bool outlined;
-  final void Function(Size)? onChanged;
+  set style(TextStyle? value) {
+    if (value != null) {
+      _style = value;
+      markNeedsPaint();
+    }
+  }
+
+  set padding(double? value) {
+    if (value != null) {
+      _padding = value;
+      markNeedsPaint();
+    }
+  }
+
+  set width(double? value) {
+    if (value != null) {
+      _width = value;
+      markNeedsPaint();
+    }
+  }
+
+  set backgroundColor(Color? value) {
+    if (value != null) {
+      _backgroundColor = value;
+      markNeedsPaint();
+    }
+  }
+
+  set color(Color? value) {
+    if (value != null) {
+      _color = value;
+      markNeedsPaint();
+    }
+  }
+
+  set borders(List<MeasuredBorder>? value) {
+    if (value != null) {
+      _borders = value;
+      markNeedsPaint();
+    }
+  }
+
+  set outlined(bool? value) {
+    if (value != null) {
+      _outlined = value;
+      markNeedsPaint();
+    }
+  }
+
+  set onChanged(void Function(Size)? value) {
+    if (value != null) {
+      _onChanged = value;
+      markNeedsPaint();
+    }
+  }
+
+  ///
 
   Size? oldSize;
 
@@ -89,10 +171,11 @@ class _RenderSizeReporter extends RenderBox
       size = Size.zero;
     }
 
-    /// Schedules the execution of the registered callback[onChanged] after the frame build is complete.
+    /// Schedules the execution of the registered callback[onChanged]
+    ///   after the frame build is complete.
     if (oldSize != size) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        onChanged?.call(size);
+        _onChanged?.call(size);
       });
       oldSize = size;
     }
@@ -113,32 +196,32 @@ class _RenderSizeReporter extends RenderBox
     if (child != null) {
       context.paintChild(child!, offset);
 
-      /// [borders] == null, call a onChaned if any
-      if (borders == null) return;
-
       final canvas = context.canvas;
       final rect = offset & size;
 
       /// Measured widget has a Colored plane if any [backgroundColor].
-      if (backgroundColor != null) {
+      if (_backgroundColor != null) {
         canvas.drawRect(
           rect,
           linePainter
-            ..color = backgroundColor!
+            ..color = _backgroundColor!
             ..style = PaintingStyle.fill,
         );
       }
 
       /// Draw a rectangle which meets child's size If any [outlined]
-      if (outlined) {
+      if (_outlined) {
         canvas.drawRect(
           rect,
           linePainter
-            ..color = color
-            ..strokeWidth = width
+            ..color = _color
+            ..strokeWidth = _width
             ..style = PaintingStyle.stroke,
         );
       }
+
+      /// [borders] == null, call a onChaned if any
+      if (_borders.isEmpty) return;
 
       /// Draw measured line and length value at top, left, bottom, right.
       ///
@@ -149,8 +232,8 @@ class _RenderSizeReporter extends RenderBox
       ///    |                    |
 
       /// set common properties: line's width, color, padding etc
-      linePainter.color = color;
-      linePainter.strokeWidth = width;
+      linePainter.color = _color;
+      linePainter.strokeWidth = _width;
 
       final textPainter = TextPainter()
         ..textDirection = TextDirection.ltr
@@ -162,15 +245,15 @@ class _RenderSizeReporter extends RenderBox
       Alignment textAlignment;
       Offset start, end;
 
-      for (final side in borders!) {
+      for (final side in _borders) {
         switch (side) {
           case MeasuredBorder.top:
           case MeasuredBorder.bottom:
             measuredRect = (side == MeasuredBorder.top)
                 ? Alignment.topLeft
-                    .inscribe(Size(size.width, padding * 2), rect)
+                    .inscribe(Size(size.width, _padding * 2), rect)
                 : Alignment.bottomLeft
-                    .inscribe(Size(size.width, padding * 2), rect);
+                    .inscribe(Size(size.width, _padding * 2), rect);
             text = rect.width.toStringAsFixed(2);
             textAlignment = Alignment.center;
 
@@ -183,13 +266,13 @@ class _RenderSizeReporter extends RenderBox
 
           case MeasuredBorder.left:
           case MeasuredBorder.right:
-            measuredRect = side == MeasuredBorder.left
+            measuredRect = (side == MeasuredBorder.left)
                 ? Alignment.topLeft
-                    .inscribe(Size(padding * 2, size.height), rect)
+                    .inscribe(Size(_padding * 2, size.height), rect)
                 : Alignment.topRight
-                    .inscribe(Size(padding * 2, size.height), rect);
+                    .inscribe(Size(_padding * 2, size.height), rect);
             text = ' ${rect.height.toStringAsFixed(2)} ';
-            textAlignment = side == MeasuredBorder.left
+            textAlignment = (side == MeasuredBorder.left)
                 ? Alignment.centerLeft
                 : Alignment.centerRight;
 
@@ -266,7 +349,7 @@ class _RenderSizeReporter extends RenderBox
     Alignment alignment,
   ) {
     textPainter
-      ..text = TextSpan(text: text, style: style)
+      ..text = TextSpan(text: text, style: _style)
       ..layout();
 
     /// Get the position Offset where the text will be placed in the [rect].

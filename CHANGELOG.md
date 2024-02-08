@@ -1,3 +1,7 @@
+## 0.1.0
+
+- fix RenderObject stuff
+
 ## 0.0.4
 
 - update parameters and a little refactoring

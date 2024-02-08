@@ -64,6 +64,7 @@ SizedBox(
 #### borders
 
 - Specify the left, right, top, and bottom where the size will be displayed.
+- If not set, the default value is **[MeasuredBorder.top, MeasuredBorder.left]**, in shortly **MeasuredBorder.topleft**.
 
 #### onChanged
 
