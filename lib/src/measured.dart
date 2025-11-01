@@ -49,7 +49,7 @@ class Measured extends SingleChildRenderObjectWidget {
       width: width ?? 0.65,
       color: color ?? theme.color!,
       padding: padding ?? 12.0,
-      outlined: outlined ?? false,
+      outlined: outlined ?? true,
       onChanged: onChanged,
     );
   }

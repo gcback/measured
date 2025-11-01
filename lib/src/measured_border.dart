@@ -30,13 +30,13 @@ extension WidgetExtensions on Widget {
     void Function(Size size)? onChanged,
   }) =>
       Measured(
-        borders: borders,
+        // borders: MeasuredBorder.topLeft,
         backgroundColor: backgroundColor,
         color: color,
         width: width,
         padding: padding,
         style: style,
-        outlined: outlined,
+        // outlined: outlined,
         onChanged: onChanged,
         child: this,
       );
