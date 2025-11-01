@@ -1,3 +1,7 @@
+## 1.0.0
+
+- default constructor updated
+
 ## 0.1.0
 
 - fix RenderObject stuff
