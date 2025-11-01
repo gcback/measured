@@ -1,3 +1,7 @@
+## 1.0.1
+
+- default constructor fixed
+
 ## 1.0.0
 
 - default constructor updated

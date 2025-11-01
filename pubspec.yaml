@@ -1,6 +1,6 @@
 name: measured
 description: 'displays the actual size every time the size of the child widget changes'
-version: 1.0.0
+version: 1.0.1
 homepage: https://github.com/gcback/measured
 
 environment:
